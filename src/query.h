@@ -40,7 +40,8 @@ enum _hy_key_name_e {
     HY_PKG_LATEST,
     HY_PKG_DOWNGRADES,
     HY_PKG_UPGRADES,
-    HY_PKG_OBSOLETING
+    HY_PKG_OBSOLETING,
+    HY_PKG_REQUIRES
 };
 
 HyQuery hy_query_create(HySack sack);

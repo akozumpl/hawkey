@@ -140,6 +140,79 @@ filter_providers(HyQuery q, struct _Filter *f, Map *m)
 }
 
 static void
+filter_requires(HyQuery q, struct _Filter *f, Map *m)
+{
+    Pool *pool = sack_pool(q->sack);
+    Queue provided;
+    const char *matches[f->nmatches+1];
+    HyQuery local_q = hy_query_create(q->sack);
+
+    queue_init(&provided);
+
+    if ((f->filter_type & ~HY_COMPARISON_FLAG_MASK) != HY_EQ)
+        assert(0);
+
+    // 0 ended list of matches
+    for (int i = 0; i < f->nmatches; i++) matches[i] = f->matches[i];
+    matches[f->nmatches] = NULL;
+
+    hy_query_filter_in(local_q, HY_PKG_NAME, HY_EQ, matches);
+    HyPackageList plist = hy_query_run(local_q);
+
+    // Build list of provided stuff
+    int count = hy_packagelist_count(plist);
+    for (int i = 0; i < count; i++) {
+        HyPackage pkg = hy_packagelist_get(plist, i);
+        Solvable *s = pool_id2solvable(pkg->pool, pkg->id);
+        Queue local_provided;
+        queue_init(&local_provided);
+
+        if (!solvable_lookup_idarray(s, SOLVABLE_PROVIDES, &local_provided)) {
+            queue_free(&local_provided);
+            continue;
+        }
+
+        for(int x = 0; local_provided.count; x++)
+            queue_pushunique(&provided, queue_pop(&local_provided));
+        queue_free(&local_provided);
+    }
+
+    // Find all packages requiring at least one item from provided queue
+    for (Id solvable_id = 0; solvable_id < pool->nsolvables; ++solvable_id) {
+        Solvable *s = pool_id2solvable(pool, solvable_id);
+        Queue requires;
+        int found = 0;
+
+        queue_init(&requires);
+        if (!solvable_lookup_idarray(s, SOLVABLE_REQUIRES, &requires)) {
+            queue_free(&requires);
+            continue;
+        }
+
+        for (int x = 0; requires.count; x++) {
+            Id req_id = queue_pop(&requires);
+
+            for (int y = 0; y < provided.count; y++) {
+                Id prov_id = provided.elements[y];
+                int cmp_ret = pool_match_dep(pool, prov_id, req_id);
+
+                if (cmp_ret) {
+                    found = 1;
+                    break;
+                }
+            }
+            if (found) break;
+        }
+        queue_free(&requires);
+        if (found) MAPSET(m, solvable_id);
+    }
+
+    queue_free(&provided);
+    hy_packagelist_free(plist);
+    hy_query_free(local_q);
+}
+
+static void
 filter_repo(HyQuery q, struct _Filter *f, Map *m)
 {
     Pool *pool = sack_pool(q->sack);
@@ -396,6 +469,8 @@ hy_query_run(HyQuery q)
 	map_empty(&m);
 	if (f->keyname == HY_PKG_PROVIDES) {
 	    filter_providers(q, f, &m);
+    } else if (f->keyname == HY_PKG_REQUIRES) {
+        filter_requires(q, f, &m);
 	} else if (f->keyname == HY_PKG_REPO) {
 	    filter_repo(q, f, &m);
 	} else {
