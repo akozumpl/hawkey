@@ -415,6 +415,7 @@ hy_sack_create(const char *cache_path, const char *arch, const char *rootdir,
     Pool *pool = pool_create();
 
     pool_set_rootdir(pool, rootdir);
+    pool_set_flag(pool, POOL_FLAG_OBSOLETEUSESCOLORS, 0);
     sack->pool = pool;
 
     if (cache_path != NULL) {
