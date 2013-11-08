@@ -32,6 +32,7 @@
 #include "errno.h"
 #include "iutil.h"
 #include "query_internal.h"
+#include "nevra_parser.h"
 #include "package_internal.h"
 #include "packagelist.h"
 #include "packageset_internal.h"
@@ -991,6 +992,25 @@ hy_query_filter_provides(HyQuery q, int cmp_type, const char *name, const char *
     filterp->match_type = _HY_STR;
     filterp->evr = solv_strdup(evr);
     filterp->matches[0].str = solv_strdup(name);
+    return 0;
+}
+
+int
+hy_query_filter_provides_in(HyQuery q, int nmatches, char **nevra)
+{
+    int cmp_type;
+    char *name = NULL;
+    char *evr = NULL;
+    HyReldep reldep;
+    HyReldepList reldeplist = hy_reldeplist_create(q->sack);
+    for (int i = 0; i < nmatches; ++i) {
+        if (hy_parse_nevra(nevra[i], &name, &evr, &cmp_type) == -1) {
+            continue;
+        }
+        reldep = hy_reldep_create(q->sack, name, cmp_type, evr);
+        hy_reldeplist_add(reldeplist, reldep);
+    }
+    hy_query_filter_reldep_in(q, HY_PKG_PROVIDES, reldeplist);
     return 0;
 }
 

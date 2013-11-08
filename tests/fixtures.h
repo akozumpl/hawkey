@@ -41,6 +41,7 @@ void fixture_with_forcebest(void);
 void fixture_with_main(void);
 void fixture_with_updates(void);
 void fixture_with_vendor(void);
+void fixture_with_multiprv(void);
 void fixture_all(void);
 void fixture_yum(void);
 void fixture_reset(void);

@@ -120,6 +120,13 @@ fixture_with_vendor(void)
 }
 
 void
+fixture_with_multiprv(void)
+{
+    HySack sack = create_ut_sack();
+    fail_if(setup_with(sack, HY_SYSTEM_REPO_NAME, "multiprv", NULL));
+}
+
+void
 fixture_all(void)
 {
     HySack sack = create_ut_sack();

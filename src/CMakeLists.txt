@@ -2,6 +2,7 @@ SET (hawkey_SRCS
     errno.c
     goal.c
     iutil.c
+    nevra_parser.c
     package.c
     packagelist.c
     packageset.c
@@ -32,6 +33,7 @@ ADD_SUBDIRECTORY(python)
 SET(HAWKEY_headers
     errno.h
     goal.h
+    nevra_parser.h
     package.h
     packagelist.h
     packageset.h
