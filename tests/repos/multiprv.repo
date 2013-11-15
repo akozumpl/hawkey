@@ -1,0 +1,3 @@
+=Pkg: fool 1 4 noarch
+=Prv: fool <= 1-4
+=Prv: fool-lib = 3.3

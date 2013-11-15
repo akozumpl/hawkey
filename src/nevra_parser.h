@@ -18,34 +18,17 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef FIXTURES_H
-#define FIXTURES_H
+#ifndef HY_NEVRA_PARSER
+#define HY_NEVRA_PARSER
 
-// hawkey
-#include "src/sack.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-struct TestGlobals_s {
-    char *repo_dir;
-    HySack sack;
-    char *tmpdir;
-};
+int hy_parse_nevra(const char *nevra, char **name, char **evr, int *cmp_type);
 
-/* global data used to pass values from fixtures to tests */
-extern struct TestGlobals_s test_globals;
+#ifdef __cplusplus
+}
+#endif
 
-void fixture_empty(void);
-void fixture_greedy_only(void);
-void fixture_installonly(void);
-void fixture_system_only(void);
-void fixture_with_forcebest(void);
-void fixture_with_main(void);
-void fixture_with_updates(void);
-void fixture_with_vendor(void);
-void fixture_with_multiprv(void);
-void fixture_all(void);
-void fixture_yum(void);
-void fixture_reset(void);
-void setup_yum_sack(HySack sack, const char *yum_repo_name);
-void teardown(void);
-
-#endif /* FIXTURES_H */
+#endif /* HY_NEVRA_PARSER */
