@@ -96,29 +96,30 @@ reldep_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     return (PyObject *)reldep_new_core(type, sack);
 }
 
+PyObject *
+reldepToPyObject(HyReldep reldep)
+{
+    _ReldepObject *self = (_ReldepObject *)reldep_Type.tp_alloc(&reldep_Type, 0);
+    if (self)
+        self->reldep = reldep;
+    return (PyObject *)self;
+}
+
 static int
 reldep_init(_ReldepObject *self, PyObject *args, PyObject *kwds)
 {
     PyObject *sack;
-    int cmp_type = 0;
     const char *reldep_str = NULL;
-    char *name, *evr = NULL;
     if (!PyArg_ParseTuple(args, "O!s", &sack_Type, &sack, &reldep_str))
 	return -1;
     HySack csack = sackFromPyObject(sack);
     if (csack == NULL)
 	return -1;
 
-    if (parse_reldep_str(reldep_str, &name, &evr, &cmp_type) == -1) {
-	PyErr_Format(HyExc_Value, "Wrong reldep format: %s", reldep_str);
-	return -1;
-    }
-
-    self->reldep = hy_reldep_create(csack, name, cmp_type, evr);
-    solv_free(name);
-    solv_free(evr);
+    self->reldep = hy_reldep_from_str(csack, reldep_str);
     if (self->reldep == NULL) {
-	PyErr_Format(HyExc_Value, "No such reldep: %s", name);
+	PyErr_Format(HyExc_Value,
+		"Wrong reldep format or no such reldep: %s", reldep_str);
 	return -1;
     }
     return 0;

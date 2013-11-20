@@ -28,6 +28,7 @@ SET (hawkeymodule_SRCS
     goal-py.c
     hawkeymodule.c
     iutil-py.c
+    nevra-py.c
     package-py.c
     packagedelta-py.c
     query-py.c
@@ -35,6 +36,7 @@ SET (hawkeymodule_SRCS
     reldep-py.c
     sack-py.c
     selector-py.c
+    subject-py.c
     pycomp.c)
 
 ADD_LIBRARY(_hawkeymodule SHARED ${hawkeymodule_SRCS})

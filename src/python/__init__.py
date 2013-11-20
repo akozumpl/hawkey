@@ -46,29 +46,29 @@ __all__ = [
     'Goal', 'NEVRA', 'Package', 'Query', 'Repo', 'Sack', 'Selector', 'Subject']
 
 _QUERY_KEYNAME_MAP = {
-    'pkg'	  : _hawkey.PKG,
-    'arch'	  : _hawkey.PKG_ARCH,
+    'pkg'     : _hawkey.PKG,
+    'arch'    : _hawkey.PKG_ARCH,
     'conflicts'   : _hawkey.PKG_CONFLICTS,
     'description' : _hawkey.PKG_DESCRIPTION,
     'downgrades'  : _hawkey.PKG_DOWNGRADES,
-    'empty'	  : _hawkey.PKG_EMPTY,
-    'epoch'	  : _hawkey.PKG_EPOCH,
-    'evr'	  : _hawkey.PKG_EVR,
-    'file'	  : _hawkey.PKG_FILE,
-    'latest'	  : _hawkey.PKG_LATEST,
+    'empty'   : _hawkey.PKG_EMPTY,
+    'epoch'   : _hawkey.PKG_EPOCH,
+    'evr'     : _hawkey.PKG_EVR,
+    'file'    : _hawkey.PKG_FILE,
+    'latest'      : _hawkey.PKG_LATEST,
     'latest_per_arch': _hawkey.PKG_LATEST_PER_ARCH,
-    'location'	  : _hawkey.PKG_LOCATION,
-    'name'	  : _hawkey.PKG_NAME,
-    'obsoletes'	  : _hawkey.PKG_OBSOLETES,
-    'provides'	  : _hawkey.PKG_PROVIDES,
-    'release'	  : _hawkey.PKG_RELEASE,
-    'reponame'	  : _hawkey.PKG_REPONAME,
-    'requires'	  : _hawkey.PKG_REQUIRES,
-    'sourcerpm'	  : _hawkey.PKG_SOURCERPM,
-    'summary'	  : _hawkey.PKG_SUMMARY,
-    'upgrades'	  : _hawkey.PKG_UPGRADES,
-    'url'	  : _hawkey.PKG_URL,
-    'version'	  : _hawkey.PKG_VERSION,
+    'location'    : _hawkey.PKG_LOCATION,
+    'name'    : _hawkey.PKG_NAME,
+    'obsoletes'   : _hawkey.PKG_OBSOLETES,
+    'provides'    : _hawkey.PKG_PROVIDES,
+    'release'     : _hawkey.PKG_RELEASE,
+    'reponame'    : _hawkey.PKG_REPONAME,
+    'requires'    : _hawkey.PKG_REQUIRES,
+    'sourcerpm'   : _hawkey.PKG_SOURCERPM,
+    'summary'     : _hawkey.PKG_SUMMARY,
+    'upgrades'    : _hawkey.PKG_UPGRADES,
+    'url'     : _hawkey.PKG_URL,
+    'version'     : _hawkey.PKG_VERSION,
 }
 
 _CMP_MAP = {
@@ -95,6 +95,12 @@ VERSION_MAJOR = _hawkey.VERSION_MAJOR
 VERSION_MINOR = _hawkey.VERSION_MINOR
 VERSION_PATCH = _hawkey.VERSION_PATCH
 VERSION=u"%d.%d.%d" % (VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH)
+
+FORM_NEVRA  = _hawkey.FORM_NEVRA
+FORM_NEVR   = _hawkey.FORM_NEVR
+FORM_NEV    = _hawkey.FORM_NEV
+FORM_NA     = _hawkey.FORM_NA
+FORM_NAME   = _hawkey.FORM_NAME
 
 SYSTEM_REPO_NAME = _hawkey.SYSTEM_REPO_NAME
 CMDLINE_REPO_NAME = _hawkey.CMDLINE_REPO_NAME
@@ -126,21 +132,7 @@ def split_nevra(s):
     t = _hawkey.split_nevra(s)
     return NEVRA(*t)
 
-_NEVRA = collections.namedtuple("_NEVRA",
-                                ["name", "epoch", "version", "release", "arch"])
-
-class NEVRA(_NEVRA):
-    __slots__ = ()
-
-    def evr_cmp(self, other, sack):
-        return sack.evr_cmp(self.evr, other.evr)
-
-    @property
-    def evr(self):
-        fmt= "%(epoch)d:%(version)s-%(release)s"
-        if self.epoch is None:
-            fmt = "%(version)s-%(release)s"
-        return fmt % self._asdict()
+class NEVRA(_hawkey.NEVRA):
 
     def to_query(self, sack):
         return Query(sack).filter(
@@ -148,8 +140,8 @@ class NEVRA(_NEVRA):
             release=self.release, arch=self.arch)
 
 class Goal(_hawkey.Goal):
-    _reserved_kw	= set(['package', 'select'])
-    _flag_kw		= set(['clean_deps', 'check_installed'])
+    _reserved_kw    = set(['package', 'select'])
+    _flag_kw        = set(['clean_deps', 'check_installed'])
 
     def _auto_selector(fn):
         def tweaked_fn(self, *args, **kwargs):
@@ -293,161 +285,9 @@ class Selector(_hawkey.Selector):
             super(Selector, self).set(*arg_tuple)
         return self
 
-FORM_NEVRA	= re.compile("""(?P<name>[.\-S]+)-\
-(?P<epoch>E)?(?P<version>[.S]+)-\
-(?P<release>[.S]+)\.(?P<arch>S)$""")
-FORM_NEVR	= re.compile("""(?P<name>[.\-S]+)-\
-(?P<epoch>E)?(?P<version>[.S]+)-(?P<release>[.S]+)$""")
-FORM_NEV	= re.compile("""(?P<name>[.\-S]+)-\
-(?P<epoch>E)?(?P<version>[.S]+)$""")
-FORM_NA		= re.compile("""(?P<name>[.\-S]+)\.(?P<arch>S)$""")
-FORM_NAME	= re.compile("""(?P<name>[.\-S]+)$""")
-
-# most specific to least
-FORMS_MOST_SPEC	= [FORM_NEVRA, FORM_NEVR, FORM_NEV, FORM_NA, FORM_NAME]
-# what the user most probably means
-FORMS_REAL	= [FORM_NA, FORM_NAME, FORM_NEVRA, FORM_NEV, FORM_NEVR]
-
-def _is_glob_pattern(pattern):
-    return set(pattern) & set("*[?")
-
-class _Token(object):
-    def __init__(self, content, epoch=False):
-        self.content = content
-        self.epoch = epoch
-
-    def __repr__(self):
-        if self.epoch:
-            return "<%s:>" % self.content
-        elif self.content == '.':
-            return "<.>"
-        elif self.content == '-':
-            return "<->"
-        else:
-            return self.content
-
-    def __str__(self):
-        if self.epoch:
-            return "%s:" % self.content
-        return self.content
-
-    def abbr(self):
-        if self.epoch:
-            return "E"
-        elif self.content in ('.', '-'):
-            return self.content
-        else:
-            return "S"
-
-class Subject(object):
-    def __init__(self, pattern):
-        self.pat = pattern
-        self._tokenize()
-
-    @property
-    def _abbr(self):
-        return "".join(map(operator.methodcaller('abbr'), self.tokens))
-
-    @staticmethod
-    def _listify_form(form):
-        if type(form) is type(FORM_NEVRA):
-            return [form]
-        else:
-            return form[:]
-
-    @staticmethod
-    def _is_int(s):
-        return Subject._to_int(s) is not None
-
-    @staticmethod
-    def _throw_tokens(pattern):
-        current = ""
-        for c in pattern:
-            if c in (".", "-"):
-                yield _Token(current)
-                yield _Token(c)
-                current = ""
-                continue
-            if c == ":" and Subject._is_int(current):
-                yield _Token(current, epoch=True)
-                current = ""
-                continue
-            current += c
-        yield _Token(current)
-
-    @staticmethod
-    def _to_int(s):
-        try:
-            return int(s)
-        except (ValueError, TypeError):
-            return None
-
-    def _backmap(self, abbr, match, group):
-        start = match.start(group)
-        end = match.end(group)
-        merged = "".join(map(str, self.tokens[start:end]))
-        if group == 'epoch':
-            return self._to_int(merged[:-1])
-        return merged
-
-    def _tokenize(self):
-        self.tokens = list(self._throw_tokens(self.pat))
-
-    @property
-    def pattern(self):
-        return self.pat
-
-    default_nevra=NEVRA(name=None, epoch=None, version=None, release=None,
-                        arch=None)
-
-    def nevra_possibilities(self, form=FORMS_MOST_SPEC):
-        abbr = self._abbr
-        forms = self._listify_form(form)
-        for pat in forms:
-            match = pat.match(abbr)
-            if match is None:
-                continue
-            yield self.default_nevra._replace(**
-                {key:self._backmap(abbr, match, key)
-                 for key in match.groupdict()})
-
-    def nevra_possibilities_real(self, sack, allow_globs=False, icase=False,
-                                 form=FORMS_REAL):
-        def should_check_arch(val):
-            if val is None:
-                return False
-            if allow_globs and _is_glob_pattern(val):
-                # filtering by a globbed arch is not supported by sack._knows()
-                return False
-            return True
-
-        def filter_version(version):
-            if version is None:
-                return None
-            if allow_globs and _is_glob_pattern(version):
-                # filtering by a globbed version is not supported by sack._knows()
-                return None
-            return version
-
-        existing_arches = sack.list_arches()
-        existing_arches.append('src')
-        for nevra in self.nevra_possibilities(form=form):
-            if nevra.name is not None:
-                name = nevra.name
-                # do not enable globbing unless necessary, it gets expensive
-                glob = bool(allow_globs and _is_glob_pattern(name))
-                version = filter_version(nevra.version)
-                if not sack._knows(name, version, name_only=True,
-                                   icase=icase, glob=glob):
-                    continue
-
-            if should_check_arch(nevra.arch):
-                if nevra.arch not in existing_arches:
-                    continue
-            yield nevra
-
-    def reldep_possibilities_real(self, sack, icase=False):
-        abbr = self._abbr
-        if FORM_NAME.match(abbr):
-            if sack._knows(self.pat, icase=icase):
-                yield Reldep(sack, self.pat)
+class Subject(_hawkey.Subject):
+    def reldep_possibilities_real(self, *args, **kwargs):
+        res = super(Subject, self).reldep_possibilities_real(*args, **kwargs)
+        if res:
+            return iter([res])
+        return iter([])
