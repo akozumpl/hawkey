@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2013 Red Hat, Inc.
  *
  * Licensed under the GNU Lesser General Public License Version 2.1
  *
@@ -18,31 +18,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef HY_RELDEP_H
-#define HY_RELDEP_H
+#ifndef NEVRA_PY_H
+#define NEVRA_PY_H
 
-#ifdef __cplusplus
-extern "C" {
+#include "src/nevra.h"
+
+extern PyTypeObject nevra_Type;
+
+HyNevra nevraFromPyObject(PyObject *o);
+PyObject *nevraToPyObject(HyNevra nevra);
+int nevra_converter(PyObject *o, HyNevra *nevra_ptr);
+
+typedef struct {
+    PyObject_HEAD
+    HyNevra nevra;
+} _NevraObject;
+
 #endif
-
-/* hawkey */
-#include "types.h"
-
-HyReldep hy_reldep_create(HySack sack, const char *name, int cmp_type,
-			  const char *evr);
-HyReldep hy_reldep_from_str(HySack sack, const char *reldep_str);
-void hy_reldep_free(HyReldep reldep);
-HyReldep hy_reldep_clone(HyReldep reldep);
-char *hy_reldep_str(HyReldep reldep);
-
-HyReldepList hy_reldeplist_create(HySack sack);
-void hy_reldeplist_free(HyReldepList reldeplist);
-void hy_reldeplist_add(HyReldepList reldeplist, HyReldep reldep);
-int hy_reldeplist_count(HyReldepList reldeplist);
-HyReldep hy_reldeplist_get_clone(HyReldepList reldeplist, int index);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* HY_RELDEP_H */

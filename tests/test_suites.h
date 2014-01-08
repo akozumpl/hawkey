@@ -33,6 +33,7 @@ Suite *reldep_suite(void);
 Suite *repo_suite(void);
 Suite *sack_suite(void);
 Suite *selector_suite(void);
+Suite *subject_suite(void);
 Suite *util_suite(void);
 
 #endif // TEST_SUITES_H

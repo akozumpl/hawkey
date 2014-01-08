@@ -82,6 +82,19 @@ hy_reldep_create(HySack sack, const char *name, int cmp_type, const char *evr)
     return reldep_create(pool, id);
 }
 
+HyReldep
+hy_reldep_from_str(HySack sack, const char *reldep_str)
+{
+    char *name, *evr = NULL;
+    int cmp_type = 0;
+    if (parse_reldep_str(reldep_str, &name, &evr, &cmp_type) == -1)
+    return NULL;
+    HyReldep reldep = hy_reldep_create(sack, name, cmp_type, evr);
+    solv_free(name);
+    solv_free(evr);
+    return reldep;
+}
+
 void
 hy_reldep_free(HyReldep reldep)
 {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2013 Red Hat, Inc.
  *
  * Licensed under the GNU Lesser General Public License Version 2.1
  *
@@ -18,31 +18,46 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef HY_RELDEP_H
-#define HY_RELDEP_H
+#ifndef HY_NEVRA_H
+#define HY_NEVRA_H
+
+#include "types.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* hawkey */
-#include "types.h"
+enum _hy_nevra_param_e {
+    HY_NEVRA_NAME,
+    HY_NEVRA_EPOCH,
+    HY_NEVRA_VERSION,
+    HY_NEVRA_RELEASE,
+    HY_NEVRA_ARCH
+};
 
-HyReldep hy_reldep_create(HySack sack, const char *name, int cmp_type,
-			  const char *evr);
-HyReldep hy_reldep_from_str(HySack sack, const char *reldep_str);
-void hy_reldep_free(HyReldep reldep);
-HyReldep hy_reldep_clone(HyReldep reldep);
-char *hy_reldep_str(HyReldep reldep);
+struct Nevra {
+    char *name;
+    int epoch;
+    char *version;
+    char *release;
+    char *arch;
+};
 
-HyReldepList hy_reldeplist_create(HySack sack);
-void hy_reldeplist_free(HyReldepList reldeplist);
-void hy_reldeplist_add(HyReldepList reldeplist, HyReldep reldep);
-int hy_reldeplist_count(HyReldepList reldeplist);
-HyReldep hy_reldeplist_get_clone(HyReldepList reldeplist, int index);
+HyNevra hy_nevra_create();
+void hy_nevra_clear(HyNevra nevra);
+void hy_nevra_free(HyNevra nevra);
+HyNevra hy_nevra_clone(HyNevra nevra);
+int hy_nevra_cmp(HyNevra nevra1, HyNevra nevra2);
+int hy_nevra_possibility(char *nevra_str, const char *re, HyNevra nevra);
+int hy_parse_nevra(char *nevra_str, const char *re, char **n, int *e, char **v,
+	char **r, char **a);
+void print_nevra(HyNevra nevra);
+
+const char *hy_nevra_get_string(HyNevra nevra, int which);
+void hy_nevra_set_string(HyNevra nevra, int which, const char* str_val);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* HY_RELDEP_H */
+#endif

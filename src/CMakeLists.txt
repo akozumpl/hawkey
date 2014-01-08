@@ -2,6 +2,7 @@ SET (hawkey_SRCS
     errno.c
     goal.c
     iutil.c
+    nevra.c
     package.c
     packagelist.c
     packageset.c
@@ -11,6 +12,7 @@ SET (hawkey_SRCS
     sack.c
     selector.c
     stringarray.c
+    subject.c
     util.c)
 
 ADD_LIBRARY(libhawkey SHARED ${hawkey_SRCS})
@@ -21,17 +23,18 @@ SET_TARGET_PROPERTIES(libhawkey PROPERTIES SOVERSION 0)
 
 ADD_EXECUTABLE(hth hth.c)
 TARGET_LINK_LIBRARIES(hth libhawkey
-			   ${SOLV_LIBRARY}
-			   ${SOLVEXT_LIBRARY}
-			   ${EXPAT_LIBRARY}
-			   ${ZLIB_LIBRARY}
-			   ${RPMDB_LIBRARY})
+               ${SOLV_LIBRARY}
+               ${SOLVEXT_LIBRARY}
+               ${EXPAT_LIBRARY}
+               ${ZLIB_LIBRARY}
+               ${RPMDB_LIBRARY})
 
 ADD_SUBDIRECTORY(python)
 
 SET(HAWKEY_headers
     errno.h
     goal.h
+    nevra.h
     package.h
     packagelist.h
     packageset.h
@@ -40,6 +43,7 @@ SET(HAWKEY_headers
     repo.h
     sack.h
     selector.h
+    subject.h
     types.h
     util.h
     stringarray.h

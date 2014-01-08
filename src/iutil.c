@@ -642,7 +642,7 @@ dump_map(Pool *pool, Map *m)
     return c;
 }
 
-static int
+int
 copy_str_from_subexpr(char** target, const char* source,
     regmatch_t* matches, int i)
 {
@@ -723,4 +723,18 @@ parse_reldep_str(const char *reldep_str, char **name, char **evr,
 
     regfree(&reg);
     return ret;
+}
+
+char *
+hy_nevra_evr(int epoch, char *version, char *release)
+{
+    char *str = NULL;
+    if (epoch == -1) {
+        str = solv_malloc2(sizeof(char), 2 + strlen(version) + strlen(release));
+        sprintf(str, "%s-%s", version, release);
+    } else {
+        str = solv_malloc2(sizeof(char), 18 + strlen(version) + strlen(release));
+        sprintf(str, "%d:%s-%s", epoch, version, release);
+    }
+    return str;
 }

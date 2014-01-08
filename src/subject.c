@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2013 Red Hat, Inc.
  *
  * Licensed under the GNU Lesser General Public License Version 2.1
  *
@@ -18,31 +18,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef HY_RELDEP_H
-#define HY_RELDEP_H
+#include <stdlib.h>
+#include "subject.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// most specific to least
+const char *forms_most_spec[] = {
+    HY_FORM_NEVRA, HY_FORM_NEVR, HY_FORM_NEV, HY_FORM_NA, HY_FORM_NAME, NULL };
 
-/* hawkey */
-#include "types.h"
-
-HyReldep hy_reldep_create(HySack sack, const char *name, int cmp_type,
-			  const char *evr);
-HyReldep hy_reldep_from_str(HySack sack, const char *reldep_str);
-void hy_reldep_free(HyReldep reldep);
-HyReldep hy_reldep_clone(HyReldep reldep);
-char *hy_reldep_str(HyReldep reldep);
-
-HyReldepList hy_reldeplist_create(HySack sack);
-void hy_reldeplist_free(HyReldepList reldeplist);
-void hy_reldeplist_add(HyReldepList reldeplist, HyReldep reldep);
-int hy_reldeplist_count(HyReldepList reldeplist);
-HyReldep hy_reldeplist_get_clone(HyReldepList reldeplist, int index);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* HY_RELDEP_H */
+// what the user most probably means
+const char *forms_real[] = { HY_FORM_NA, HY_FORM_NAME, HY_FORM_NEVRA, HY_FORM_NEV, HY_FORM_NEVR, NULL };

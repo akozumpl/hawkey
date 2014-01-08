@@ -30,12 +30,11 @@ INP_FOF_NOEPOCH="four-of-fish-3.6.9-11.fc100.x86_64"
 INP_FOF_NEV="four-of-fish-8:3.6.9"
 INP_FOF_NA="four-of-fish-3.6.9.i686"
 
-class SubjectTest(base.TestCase):
-    def test_tokenizer(self):
-        subj = hawkey.Subject(INP_FOF)
-        rejoin = "".join(map(str, subj.tokens))
-        self.assertEqual(rejoin, INP_FOF)
+def print_nevra(nevra):
+    print "### nevra(name=%s, epoch=%s, version=%s, release=%s, arch=%s)" % \
+        (nevra.name, str(nevra.epoch), nevra.version, nevra.release, nevra.arch)
 
+class SubjectTest(base.TestCase):
     def test_nevra(self):
         subj = hawkey.Subject(INP_FOF)
         result = list(subj.nevra_possibilities(form=hawkey.FORM_NEVRA))
@@ -204,6 +203,7 @@ class SubjectRealPossibilitiesTest(base.TestCase):
 
     def test_icase(self):
         subj = hawkey.Subject("penny-lib-DEVEL")
+        # print("### poss = ", map(print_nevra, subj.nevra_possibilities_real(self.sack, icase=True)))
         nevra = next(subj.nevra_possibilities_real(self.sack, icase=True))
         self.assertEqual(nevra.name, "penny-lib-DEVEL")
 
