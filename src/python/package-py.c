@@ -274,13 +274,7 @@ get_chksum(_PackageObject *self, void *closure)
 
     PyObject *res;
     int checksum_length = checksum_type2length(type);
-
-#if PY_MAJOR_VERSION < 3
     res = Py_BuildValue("is#", type, cs, checksum_length);
-#else
-    res = Py_BuildValue("iy#", type, cs, checksum_length);
-#endif
-
     return res;
 }
 
