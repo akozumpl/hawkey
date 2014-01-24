@@ -87,6 +87,7 @@ reldep_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
     if (sack == NULL) {
 	PyErr_SetString(PyExc_ValueError,
 			"Expected a Sack object as the first argument.");
+	return NULL;
     }
     if (!sackObject_Check(sack)) {
 	PyErr_SetString(PyExc_TypeError,
@@ -118,7 +119,7 @@ reldep_init(_ReldepObject *self, PyObject *args, PyObject *kwds)
     solv_free(name);
     solv_free(evr);
     if (self->reldep == NULL) {
-	PyErr_Format(HyExc_Value, "No such reldep: %s", name);
+	PyErr_Format(HyExc_Value, "No such reldep: %s", reldep_str);
 	return -1;
     }
     return 0;

@@ -66,3 +66,12 @@ class Reldep(base.TestCase):
         q = hawkey.Query(self.sack).filter(provides=reldep)
         self.assertLength(q, 1)
         self.assertEqual(str(q[0]), "penny-lib-4-1.x86_64")
+
+    def test_not_crash(self):
+        self.assertRaises(ValueError, hawkey.Reldep)
+
+    def test_non_num_version(self):
+        reldep_str = 'foo >= 1.0-1.fc20'
+        with self.assertRaises(hawkey.ValueException) as ctx:
+            hawkey.Reldep(self.sack, reldep_str)
+        self.assertEqual(ctx.exception.args[0], "No such reldep: %s" % reldep_str)

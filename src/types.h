@@ -25,19 +25,23 @@
 extern "C" {
 #endif
 
+typedef enum _HyForm HyForm;
 typedef struct _HyRepo * HyRepo;
 typedef struct _HyGoal * HyGoal;
+typedef struct _HyNevra * HyNevra;
 typedef struct _HyPackage * HyPackage;
 typedef struct _HyPackageDelta * HyPackageDelta;
 typedef struct _HyPackageList * HyPackageList;
 typedef struct _HyPackageListIter * HyPackageListIter;
 typedef struct _HyPackageSet * HyPackageSet;
+typedef struct _HyPossibilities * HyPossibilities;
 typedef struct _HyQuery * HyQuery;
 typedef struct _HyReldep * HyReldep;
 typedef struct _HyReldepList * HyReldepList;
 typedef struct _HySack * HySack;
 typedef struct _HySelector * HySelector;
 typedef char ** HyStringArray;
+typedef char * HySubject;
 
 typedef const unsigned char HyChecksum;
 

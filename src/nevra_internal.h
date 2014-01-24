@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2013 Red Hat, Inc.
  *
  * Licensed under the GNU Lesser General Public License Version 2.1
  *
@@ -18,22 +18,16 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef TEST_SUITES_H
-#define TEST_SUITES_H
+#ifndef HY_NEVRA_INTERNAL_H
+#define HY_NEVRA_INTERNAL_H
 
-#include <check.h>
+struct _HyNevra {
+    char *name;
+    int epoch;
+    char *version;
+    char *release;
+    char *arch;
+};
 
-Suite *goal_suite(void);
-Suite *iutil_suite(void);
-Suite *package_suite(void);
-Suite *packagelist_suite(void);
-Suite *packageset_suite(void);
-Suite *query_suite(void);
-Suite *reldep_suite(void);
-Suite *repo_suite(void);
-Suite *sack_suite(void);
-Suite *selector_suite(void);
-Suite *subject_suite(void);
-Suite *util_suite(void);
 
-#endif // TEST_SUITES_H
+#endif // HY_NEVRA_INTERNAL_H
