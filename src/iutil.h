@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  *
  * Licensed under the GNU Lesser General Public License Version 2.1
  *
@@ -33,6 +33,7 @@
 // hawkey
 #include "packagelist.h"
 #include "sack.h"
+#include "update_internal.h"
 
 #define CHKSUM_BYTES 32
 
@@ -78,6 +79,10 @@ Id str2archid(Pool *pool, const char *s);
 void queue2plist(HySack sack, Queue *q, HyPackageList plist);
 Id what_upgrades(Pool *pool, Id p);
 Id what_downgrades(Pool *pool, Id p);
+static inline int is_package(Pool *pool, Solvable *s)
+{
+    return !str_startswith(pool_id2str(pool, s->name), SOLVABLE_NAME_UPDATE_PREFIX);
+}
 
 /* package version utils */
 unsigned long pool_get_epoch(Pool *pool, const char *evr);
@@ -95,5 +100,19 @@ HyReldep reldep_from_str(HySack sack, const char *reldep_str);
 int dump_jobqueue(Pool *pool, Queue *job);
 int dump_solvables_queue(Pool *pool, Queue *q);
 int dump_map(Pool *pool, Map *m);
+
+/* loop over all package providers of d */
+#define FOR_PKG_PROVIDES(v, vp, d)                                      \
+    FOR_PROVIDES(v, vp, d)                                              \
+        if (!is_package(pool, pool_id2solvable(pool, v)))               \
+            continue;                                                   \
+        else
+
+/* loop over all package solvables */
+#define FOR_PKG_SOLVABLES(p)                                            \
+    FOR_POOL_SOLVABLES(p)                                               \
+        if (!is_package(pool, pool_id2solvable(pool, p)))               \
+            continue;                                                   \
+        else
 
 #endif

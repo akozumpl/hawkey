@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2013 Red Hat, Inc.
+ * Copyright (C) 2012-2014 Red Hat, Inc.
  *
  * Licensed under the GNU Lesser General Public License Version 2.1
  *
@@ -238,7 +238,8 @@ queue_di(Pool *pool, Queue *queue, const char *str, int di_key, int flags)
 
     dataiterator_init(&di, pool, 0, 0, di_key, str, di_flags);
     while (dataiterator_step(&di))
-	queue_push(queue, di.solvid);
+        if (is_package(pool, pool_id2solvable(pool, di.solvid)))
+            queue_push(queue, di.solvid);
     dataiterator_free(&di);
     return;
 }
@@ -252,7 +253,7 @@ queue_pkg_name(HySack sack, Queue *queue, const char *provide, int flags)
 	if (id == 0)
 	    return;
 	Id p, pp;
-	FOR_PROVIDES(p, pp, id) {
+	FOR_PKG_PROVIDES(p, pp, id) {
 	    Solvable *s = pool_id2solvable(pool, p);
 	    if (s->name == id)
 		queue_push(queue, p);
@@ -273,7 +274,7 @@ queue_provides(HySack sack, Queue *queue, const char *provide, int flags)
 	if (id == 0)
 	    return;
 	Id p, pp;
-	FOR_PROVIDES(p, pp, id)
+	FOR_PKG_PROVIDES(p, pp, id)
 	    queue_push(queue, p);
 	return;
     }
@@ -717,18 +718,12 @@ hy_sack_add_cmdline_package(HySack sack, const char *fn)
 int
 hy_sack_count(HySack sack)
 {
-    const char *tmp;
     int cnt = 0;
-    int i;
+    Id p;
     Pool *pool = sack_pool(sack);
-    Solvable *s;
 
-    for (i = 2; i < pool->nsolvables; i++) {
-	s = pool->solvables + i;
-	tmp = pool_id2str(pool, s->name);
-	if (s->repo && strncmp(tmp, "patch:", 6) != 0)
-	    cnt++;
-    }
+    FOR_PKG_SOLVABLES(p)
+        cnt++;
     return cnt;
 }
 
