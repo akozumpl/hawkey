@@ -67,9 +67,13 @@ enum _hy_sack_cpu_flags {
 static int
 current_rpmdb_checksum(Pool *pool, unsigned char csout[CHKSUM_BYTES])
 {
-    const char *fn = pool_prepend_rootdir_tmp(pool, HY_SYSTEM_RPMDB);
+    const char *fn = pool_prepend_rootdir_tmp(pool, HY_SYSTEM_RO_RPMDB);
     FILE *fp_rpmdb = fopen(fn, "r");
     int ret = 0;
+
+
+    if (!fp_rpmdb)
+      fn = pool_prepend_rootdir_tmp (pool, HY_SYSTEM_RPMDB);
 
     if (!fp_rpmdb || checksum_stat(csout, fp_rpmdb))
 	ret = 1;

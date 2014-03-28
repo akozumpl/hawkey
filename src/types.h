@@ -49,6 +49,7 @@ typedef int (*hy_solution_callback)(HyGoal goal, void *callback_data);
 
 #define HY_SYSTEM_REPO_NAME "@System"
 #define HY_SYSTEM_RPMDB "/var/lib/rpm/Packages"
+#define HY_SYSTEM_RO_RPMDB "/usr/share/rpm/Packages"
 #define HY_CMDLINE_REPO_NAME "@commandline"
 #define HY_EXT_FILENAMES "-filenames"
 #define HY_EXT_UPDATEINFO "-updateinfo"
