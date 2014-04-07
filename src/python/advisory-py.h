@@ -18,9 +18,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef HY_UPDATE_INTERNAL_H
-#define HY_UPDATE_INTERNAL_H
+#ifndef ADVISORY_PY_H
+#define ADVISORY_PY_H
 
-#define SOLVABLE_NAME_UPDATE_PREFIX "patch:"
+extern PyTypeObject advisory_Type;
 
-#endif // HY_UPDATE_INTERNAL_H
+PyObject * advisoryToPyObject(HyAdvisory advisory, PyObject *sack);
+
+#endif

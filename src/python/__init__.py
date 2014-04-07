@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2012-2013 Red Hat, Inc.
+# Copyright (C) 2012-2014 Red Hat, Inc.
 #
 # Licensed under the GNU Lesser General Public License Version 2.1
 #
@@ -106,6 +106,9 @@ FORM_NA     = _hawkey.FORM_NA
 FORM_NAME   = _hawkey.FORM_NAME
 
 ICASE = _hawkey.ICASE
+EQ = _hawkey.EQ
+LT = _hawkey.LT
+GT = _hawkey.GT
 
 CHKSUM_MD5 = _hawkey.CHKSUM_MD5
 CHKSUM_SHA1 = _hawkey.CHKSUM_SHA1
@@ -113,6 +116,16 @@ CHKSUM_SHA256 = _hawkey.CHKSUM_SHA256
 
 REASON_DEP = _hawkey.REASON_DEP
 REASON_USER = _hawkey.REASON_USER
+
+ADVISORY_UNKNOWN = _hawkey.ADVISORY_UNKNOWN
+ADVISORY_SECURITY = _hawkey.ADVISORY_SECURITY
+ADVISORY_BUGFIX = _hawkey.ADVISORY_BUGFIX
+ADVISORY_ENHANCEMENT = _hawkey.ADVISORY_ENHANCEMENT
+
+REFERENCE_UNKNOWN = _hawkey.REFERENCE_UNKNOWN
+REFERENCE_BUGZILLA = _hawkey.REFERENCE_BUGZILLA
+REFERENCE_CVE = _hawkey.REFERENCE_CVE
+REFERENCE_VENDOR = _hawkey.REFERENCE_VENDOR
 
 Package = _hawkey.Package
 Reldep = _hawkey.Reldep

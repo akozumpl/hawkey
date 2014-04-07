@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012-2014 Red Hat, Inc.
+ * Copyright (C) 2014 Red Hat, Inc.
  *
  * Licensed under the GNU Lesser General Public License Version 2.1
  *
@@ -18,24 +18,20 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#ifndef TEST_SUITES_H
-#define TEST_SUITES_H
+#ifndef HY_ADVISORYREF_INTERNAL_H
+#define HY_ADVISORYREF_INTERNAL_H
 
-#include <check.h>
+// libsolv
+#include <solv/pool.h>
 
-Suite *advisory_suite(void);
-Suite *advisoryref_suite(void);
-Suite *goal_suite(void);
-Suite *iutil_suite(void);
-Suite *package_suite(void);
-Suite *packagelist_suite(void);
-Suite *packageset_suite(void);
-Suite *query_suite(void);
-Suite *reldep_suite(void);
-Suite *repo_suite(void);
-Suite *sack_suite(void);
-Suite *selector_suite(void);
-Suite *subject_suite(void);
-Suite *util_suite(void);
+// hawkey
+#include "advisoryref.h"
 
-#endif // TEST_SUITES_H
+HyAdvisoryRef advisoryref_create(Pool *pool, Id a_id, int index);
+HyAdvisoryRef advisoryref_clone(HyAdvisoryRef advisoryref);
+int advisoryref_identical(HyAdvisoryRef left, HyAdvisoryRef right);
+
+HyAdvisoryRefList advisoryreflist_create();
+void advisoryreflist_add(HyAdvisoryRefList reflist, HyAdvisoryRef advisoryref);
+
+#endif // HY_ADVISORYREF_INTERNAL_H
