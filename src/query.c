@@ -739,6 +739,9 @@ compute(HyQuery q)
     if (q->sack->excludes && !(q->flags & HY_IGNORE_EXCLUDES))
 	map_subtract(q->result, q->sack->excludes);
 
+    if (q->sack->cont_includepkgs)
+	map_subtract(q->result, q->sack->fin_includepkgs);
+
     // make sure the odd bits are cleared:
     unsigned total_bits = q->result->size << 3;
     for (int i = pool->nsolvables; i < total_bits; ++i)

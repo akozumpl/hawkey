@@ -299,6 +299,12 @@ construct_job(HyGoal goal, int flags)
 	    if (MAPTST(sack->pkg_excludes, i))
 		queue_push2(job, SOLVER_SOLVABLE|SOLVER_LOCK, i);
 
+    /* apply includepkg white list */
+    if (sack->cont_includepkgs)
+	for (int i = 0; i < pool->nsolvables; ++i)
+	    if ((MAPTST(sack->fin_includepkgs, i)))
+		queue_push2(job, SOLVER_SOLVABLE|SOLVER_LOCK, i);
+
     return job;
 }
 

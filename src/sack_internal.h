@@ -43,6 +43,11 @@ struct _HySack {
     Map *pkg_excludes;
     Map *repo_excludes;
     Map *excludes;
+    Map *includepkgs;		/* list of all whitelisted packages - when
+				 * the list is complete it is used to fill
+				 * includepkgs and cont_includepkgs variables */
+    int cont_includepkgs;	/* includepkgs procesed */
+    Map *fin_includepkgs;	/* pkgs white list (dnf.conf includepkgs option) */
 };
 
 void sack_make_provides_ready(HySack sack);

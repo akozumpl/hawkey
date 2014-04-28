@@ -53,6 +53,9 @@ HyPackage hy_sack_add_cmdline_package(HySack sack, const char *fn);
 int hy_sack_count(HySack sack);
 void hy_sack_add_excludes(HySack sack, HyPackageSet pset);
 void hy_sack_set_excludes(HySack sack, HyPackageSet pset);
+void hy_sack_add_includepkgs(HySack sack, HyPackageSet pset);
+void hy_sack_set_includepkgs(HySack sack, HyPackageSet pset);
+void hy_sack_eval_includepkgs(HySack sack);
 int hy_sack_repo_enabled(HySack sack, const char *reponame, int enabled);
 
 /**

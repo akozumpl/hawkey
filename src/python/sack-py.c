@@ -334,8 +334,34 @@ add_excludes(_SackObject *self, PyObject *seq)
     HySack sack = self->sack;
     HyPackageSet pset = pyseq_to_packageset(seq, sack);
     hy_sack_add_excludes(sack, pset);
+
     hy_packageset_free(pset);
     Py_RETURN_NONE;
+}
+
+static PyObject *
+add_includepkgs(_SackObject *self, PyObject *seq)
+{
+    if (!PySequence_Check(seq)) {
+	PyErr_SetString(PyExc_TypeError, "Expected a sequence.");
+	return NULL;
+    }
+    HySack sack = self->sack;
+
+    HyPackageSet pset = pyseq_to_packageset(seq, sack);
+    hy_sack_add_includepkgs(sack, pset);
+
+    hy_packageset_free(pset);
+    Py_RETURN_NONE;
+}
+
+static PyObject *
+eval_includepkgs(_SackObject *self)
+{
+    HySack sack = self->sack;
+    hy_sack_eval_includepkgs(sack);
+    Py_RETURN_NONE;
+
 }
 
 static PyObject *
@@ -450,6 +476,10 @@ PyMethodDef sack_methods[] = {
     {"add_cmdline_package", (PyCFunction)add_cmdline_package, METH_O,
      NULL},
     {"add_excludes", (PyCFunction)add_excludes, METH_O,
+     NULL},
+    {"add_includepkgs", (PyCFunction)add_includepkgs, METH_O,
+     NULL},
+    {"eval_includepkgs", (PyCFunction)eval_includepkgs, METH_O,
      NULL},
     {"disable_repo", (PyCFunction)disable_repo, METH_O,
      NULL},
