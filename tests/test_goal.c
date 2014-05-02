@@ -102,10 +102,10 @@ size_and_free(HyPackageList plist)
 static void
 assert_iueo(HyGoal goal, int i, int u, int e, int o)
 {
-    fail_unless(size_and_free(hy_goal_list_installs(goal)) == i);
-    fail_unless(size_and_free(hy_goal_list_upgrades(goal)) == u);
-    fail_unless(size_and_free(hy_goal_list_erasures(goal)) == e);
-    fail_unless(size_and_free(hy_goal_list_obsoleted(goal)) == o);
+    ck_assert_int_eq(size_and_free(hy_goal_list_installs(goal)), i);
+    ck_assert_int_eq(size_and_free(hy_goal_list_upgrades(goal)), u);
+    ck_assert_int_eq(size_and_free(hy_goal_list_erasures(goal)), e);
+    ck_assert_int_eq(size_and_free(hy_goal_list_obsoleted(goal)), o);
 }
 
 START_TEST(test_goal_sanity)
@@ -735,6 +735,35 @@ START_TEST(test_goal_distupgrade_all)
 }
 END_TEST
 
+START_TEST(test_goal_distupgrade_all_keep_arch)
+{
+    HyGoal goal = hy_goal_create(test_globals.sack);
+    fail_if(hy_goal_distupgrade_all(goal));
+    fail_if(hy_goal_run(goal));
+
+    assert_iueo(goal, 0, 5, 0, 1);
+    HyPackageList plist = hy_goal_list_upgrades(goal);
+    // gun pkg is not upgraded to latest version of different arch
+    assert_nevra_eq(hy_packagelist_get(plist, 0), "dog-1-2.x86_64");
+    assert_nevra_eq(hy_packagelist_get(plist, 1), "pilchard-1.2.4-1.i686");
+    assert_nevra_eq(hy_packagelist_get(plist, 2), "pilchard-1.2.4-1.x86_64");
+    assert_nevra_eq(hy_packagelist_get(plist, 3), "flying-3.1-0.x86_64");
+    assert_nevra_eq(hy_packagelist_get(plist, 4), "fool-1-5.noarch");
+    hy_packagelist_free(plist);
+
+    plist = hy_goal_list_obsoleted(goal);
+    fail_unless(hy_packagelist_count(plist) == 1);
+    assert_nevra_eq(hy_packagelist_get(plist, 0), "penny-4-1.noarch");
+    hy_packagelist_free(plist);
+
+    plist = hy_goal_list_downgrades(goal);
+    fail_unless(hy_packagelist_count(plist) == 1);
+    assert_nevra_eq(hy_packagelist_get(plist, 0), "baby-6:4.9-3.x86_64");
+    hy_packagelist_free(plist);
+    hy_goal_free(goal);
+}
+END_TEST
+
 START_TEST(test_goal_distupgrade_selector_upgrade)
 {
     HyGoal goal = hy_goal_create(test_globals.sack);
@@ -1035,6 +1064,7 @@ goal_suite(void)
     tcase_add_test(tc, test_goal_get_reason);
     tcase_add_test(tc, test_goal_get_reason_selector);
     tcase_add_test(tc, test_goal_describe_problem);
+    tcase_add_test(tc, test_goal_distupgrade_all_keep_arch);
     tcase_add_test(tc, test_goal_log_decisions);
     tcase_add_test(tc, test_goal_no_reinstall);
     tcase_add_test(tc, test_goal_erase_simple);
