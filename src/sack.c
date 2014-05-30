@@ -612,6 +612,7 @@ hy_sack_create(const char *cache_path, const char *arch, const char *rootdir,
     sack->pool = pool;
     sack->running_kernel = -1;
     sack->running_kernel_fn = running_kernel;
+    sack->cont_includepkgs = 0;
 
     if (cache_path != NULL) {
 	sack->cache_dir = solv_strdup(cache_path);
@@ -674,6 +675,8 @@ hy_sack_free(HySack sack)
     free_map_fully(sack->excludes);
     free_map_fully(sack->pkg_excludes);
     free_map_fully(sack->repo_excludes);
+    free_map_fully(sack->includepkgs);
+    free_map_fully(sack->fin_includepkgs);
     pool_free(sack->pool);
     solv_free(sack);
 }
@@ -812,6 +815,69 @@ hy_sack_set_excludes(HySack sack, HyPackageSet pset)
 	map_init_clone(sack->pkg_excludes, nexcl);
     }
     recompute_excludes(sack);
+}
+
+/* function adds a packageset pset to includepackgs list to sack.
+ * There is necessary to use hy_sack_eval_includepkgs function when
+ * includepkgs list is complete to fill fin_includepkgs structure
+ */
+void
+hy_sack_add_includepkgs(HySack sack, HyPackageSet pset)
+{
+    Pool *pool = sack_pool(sack);
+    Map *incl = sack->includepkgs;
+    Map *nincl = packageset_get_map(pset);
+
+    if (incl == NULL) {
+	incl = solv_calloc(1, sizeof(Map));
+	map_init(incl, pool->nsolvables);
+	sack->includepkgs = incl;
+    }
+    assert(incl->size >= nincl->size);
+    map_or(incl, nincl);
+}
+
+void
+hy_sack_set_includepkgs(HySack sack, HyPackageSet pset)
+{
+    sack->includepkgs = free_map_fully(sack->includepkgs);
+    if (pset) {
+        Map *nincl = packageset_get_map(pset);
+	sack->includepkgs = solv_calloc(1, sizeof(Map));
+	map_init_clone(sack->includepkgs, nincl);
+    }
+}
+
+/* TODO: move to libsepol library */
+void
+map_neg(Map *t, Map *s)
+{
+    unsigned char *ti, *si, *end;
+    ti = t->map;
+    si = s->map;
+    end = ti + (t->size < s->size ? t->size : s->size);
+    while (ti < end)
+	*ti++ = 255 - *si++;
+}
+
+/* fill fin_includepkgs structure by the negation of includepkgs
+ */
+void
+hy_sack_eval_includepkgs(HySack sack)
+{
+    Map *fi;
+
+    if ((sack) && (sack->includepkgs)) {
+	sack->cont_includepkgs = 1;
+
+	if (sack->fin_includepkgs)
+	    free_map_fully(sack->fin_includepkgs);
+
+	fi = solv_calloc(1, sizeof(Map));
+	map_init(fi, (sack->includepkgs->size * 8)-7);
+	map_neg(fi, sack->includepkgs);
+	sack->fin_includepkgs = fi;
+     }
 }
 
 int
