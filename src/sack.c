@@ -134,12 +134,14 @@ sack_recompute_considered(HySack sack)
     } else {
 	map_grow(pool->considered, pool->nsolvables);
     }
-    // considered = all - repo_excludes - pkg_excludes
+    // considered = (all - repo_excludes - pkg_excludes) and pkg_includes
     map_setall(pool->considered);
     if (sack->repo_excludes)
 	map_subtract(pool->considered, sack->repo_excludes);
     if (sack->pkg_excludes)
 	map_subtract(pool->considered, sack->pkg_excludes);
+    if (sack->pkg_includes)
+	map_and(pool->considered, sack->pkg_includes);
     sack->considered_uptodate = 1;
 }
 
@@ -682,6 +684,7 @@ hy_sack_free(HySack sack)
     queue_free(&sack->installonly);
 
     free_map_fully(sack->pkg_excludes);
+    free_map_fully(sack->pkg_includes);
     free_map_fully(sack->repo_excludes);
     free_map_fully(pool->considered);
     pool_free(sack->pool);
@@ -827,6 +830,23 @@ hy_sack_add_excludes(HySack sack, HyPackageSet pset)
 }
 
 void
+hy_sack_add_includes(HySack sack, HyPackageSet pset)
+{
+    Pool *pool = sack_pool(sack);
+    Map *incl = sack->pkg_includes;
+    Map *nincl = packageset_get_map(pset);
+
+    if (incl == NULL) {
+	incl = solv_calloc(1, sizeof(Map));
+	map_init(incl, pool->nsolvables);
+	sack->pkg_includes = incl;
+    }
+    assert(incl->size >= nincl->size);
+    map_or(incl, nincl);
+    sack->considered_uptodate = 0;
+}
+
+void
 hy_sack_set_excludes(HySack sack, HyPackageSet pset)
 {
     sack->pkg_excludes = free_map_fully(sack->pkg_excludes);
@@ -836,6 +856,20 @@ hy_sack_set_excludes(HySack sack, HyPackageSet pset)
 
 	sack->pkg_excludes = solv_calloc(1, sizeof(Map));
 	map_init_clone(sack->pkg_excludes, nexcl);
+    }
+    sack->considered_uptodate = 0;
+}
+
+void
+hy_sack_set_includes(HySack sack, HyPackageSet pset)
+{
+    sack->pkg_includes = free_map_fully(sack->pkg_includes);
+
+    if (pset) {
+        Map *nincl = packageset_get_map(pset);
+
+	sack->pkg_includes = solv_calloc(1, sizeof(Map));
+	map_init_clone(sack->pkg_includes, nincl);
     }
     sack->considered_uptodate = 0;
 }
