@@ -292,6 +292,22 @@ START_TEST(test_goal_selector_glob)
 }
 END_TEST
 
+START_TEST(test_goal_selector_provides_glob)
+{
+    HySelector sltr = hy_selector_create(test_globals.sack);
+    HyGoal goal = hy_goal_create(test_globals.sack);
+    
+    fail_if(hy_selector_set(sltr, HY_PKG_PROVIDES, HY_GLOB, "*em-li*"));
+    fail_if(hy_goal_install_selector(goal, sltr));
+    fail_if(hy_goal_run(goal));
+    assert_iueo(goal, 1	, 0, 0, 0);
+
+    hy_goal_free(goal);
+    hy_selector_free(sltr);        
+}
+END_TEST
+
+
 START_TEST(test_goal_selector_upgrade)
 {
     HySelector sltr = hy_selector_create(test_globals.sack);
@@ -1127,6 +1143,7 @@ goal_suite(void)
     tcase_add_test(tc, test_goal_install_selector_two);
     tcase_add_test(tc, test_goal_install_selector_nomatch);
     tcase_add_test(tc, test_goal_selector_glob);
+    tcase_add_test(tc, test_goal_selector_provides_glob);
     tcase_add_test(tc, test_goal_selector_upgrade);
     tcase_add_test(tc, test_goal_selector_upgrade_provides);
     tcase_add_test(tc, test_goal_upgrade);
