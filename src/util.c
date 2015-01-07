@@ -50,7 +50,7 @@ parse_cpu_flags(int *flags, const char *section)
 	while (tok) {
 	    if (!strcmp(tok, "neon"))
 		*flags |= ARM_NEON;
-	    else if (!strcmp(tok, "vfpv3"))
+	    else if (!strcmp(tok, "vfp"))
 		*flags |= ARM_HFP;
 	    tok = strtok_r(NULL, " ", &saveptr);
 	}
