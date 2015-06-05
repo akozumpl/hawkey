@@ -75,7 +75,11 @@ popd
 
 %check
 make ARGS="-V" test
-./py3/tests/python/tests/run_nosetests
+# Run just the Python tests, not all of them, since
+# we have coverage of the core from the first build
+pushd py3/tests/python
+make ARGS="-V" test
+popd
 
 %install
 make install DESTDIR=$RPM_BUILD_ROOT
