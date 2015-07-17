@@ -13,10 +13,10 @@ BuildRequires:	libsolv-devel >= %{libsolv_version}
 BuildRequires:	cmake expat-devel rpm-devel zlib-devel check-devel
 Requires:	libsolv%{?_isa} >= %{libsolv_version}
 # prevent provides from nonstandard paths:
-%filter_provides_in %{python_sitearch}/.*\.so$
+%filter_provides_in %{python2_sitearch}/.*\.so$
 %filter_provides_in %{python3_sitearch}/.*\.so$
 # filter out _hawkey_testmodule.so DT_NEEDED _hawkeymodule.so:
-%filter_requires_in %{python_sitearch}/hawkey/test/.*\.so$
+%filter_requires_in %{python2_sitearch}/hawkey/test/.*\.so$
 %filter_requires_in %{python3_sitearch}/hawkey/test/.*\.so$
 %filter_setup
 
@@ -98,7 +98,7 @@ popd
 %{_mandir}/man3/hawkey.3.gz
 
 %files -n python-hawkey
-%{python_sitearch}/
+%{python2_sitearch}/
 
 %files -n python3-hawkey
 %{python3_sitearch}/
