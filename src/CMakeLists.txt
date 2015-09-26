@@ -14,21 +14,21 @@ SET (hawkey_SRCS
     repo.c
     sack.c
     selector.c
-    stringarray.c
     subject.c
     subject_internal.c
     util.c)
 
 ADD_LIBRARY(libhawkey SHARED ${hawkey_SRCS})
 TARGET_LINK_LIBRARIES(libhawkey ${SOLV_LIBRARY} ${SOLVEXT_LIBRARY})
-TARGET_LINK_LIBRARIES(libhawkey ${EXPAT_LIBRARY} ${ZLIB_LIBRARY} ${RPMDB_LIBRARY})
+TARGET_LINK_LIBRARIES(libhawkey ${GLIB2_LIBRARIES} ${EXPAT_LIBRARY} ${ZLIB_LIBRARY} ${RPMDB_LIBRARY})
 SET_TARGET_PROPERTIES(libhawkey PROPERTIES OUTPUT_NAME "hawkey")
-SET_TARGET_PROPERTIES(libhawkey PROPERTIES SOVERSION 2)
+SET_TARGET_PROPERTIES(libhawkey PROPERTIES SOVERSION 3)
 
 ADD_EXECUTABLE(hth hth.c)
 TARGET_LINK_LIBRARIES(hth libhawkey
 			   ${SOLV_LIBRARY}
 			   ${SOLVEXT_LIBRARY}
+			   ${GLIB2_LIBRARIES}
 			   ${EXPAT_LIBRARY}
 			   ${ZLIB_LIBRARY}
 			   ${RPMDB_LIBRARY})
@@ -53,7 +53,6 @@ SET(HAWKEY_headers
     subject.h
     types.h
     util.h
-    stringarray.h
     version.h)
 
 IF (CMAKE_SIZEOF_VOID_P MATCHES "8")
