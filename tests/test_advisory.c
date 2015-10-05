@@ -24,7 +24,6 @@
 #include "src/advisorypkg.h"
 #include "src/advisoryref.h"
 #include "src/package.h"
-#include "src/stringarray.h"
 #include "fixtures.h"
 #include "test_suites.h"
 #include "testsys.h"
@@ -108,17 +107,6 @@ START_TEST(test_packages)
 }
 END_TEST
 
-START_TEST(test_filenames)
-{
-    HyStringArray filenames = hy_advisory_get_filenames(advisory);
-
-    ck_assert_int_eq(hy_stringarray_length(filenames), 1);
-    ck_assert_str_eq(filenames[0], "tour.noarch.rpm");
-
-    hy_stringarray_free(filenames);
-}
-END_TEST
-
 START_TEST(test_refs)
 {
     HyAdvisoryRef reference;
@@ -155,7 +143,6 @@ advisory_suite(void)
     tcase_add_test(tc, test_rights);
     tcase_add_test(tc, test_updated);
     tcase_add_test(tc, test_packages);
-    tcase_add_test(tc, test_filenames);
     tcase_add_test(tc, test_refs);
     suite_add_tcase(s, tc);
 

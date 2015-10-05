@@ -17,7 +17,7 @@ URL:		https://github.com/rpm-software-management/%{name}
 # git clone https://github.com/rpm-software-management/hawkey.git && cd hawkey && tito build --tgz
 Source0:	https://github.com/rpm-software-management/%{name}/archive/%{name}-%{version}.tar.gz
 BuildRequires:	libsolv-devel >= %{libsolv_version}
-BuildRequires:	cmake expat-devel rpm-devel zlib-devel check-devel
+BuildRequires:	cmake expat-devel rpm-devel zlib-devel check-devel valgrind glib2-devel
 Requires:	libsolv%{?_isa} >= %{libsolv_version}
 # prevent provides from nonstandard paths:
 %filter_provides_in %{python_sitearch}/.*\.so$
@@ -104,7 +104,11 @@ ERROR
 fi
 make ARGS="-V" test
 %if %{with python3}
-./py3/tests/python/tests/run_nosetests
+# Run just the Python tests, not all of them, since
+# we have coverage of the core from the first build
+pushd py3/tests/python
+make ARGS="-V" test
+popd
 %endif
 
 %install
