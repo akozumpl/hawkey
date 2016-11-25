@@ -838,7 +838,6 @@ hy_sack_add_excludes(HySack sack, HyPackageSet pset)
 	map_init(excl, pool->nsolvables);
 	sack->pkg_excludes = excl;
     }
-    assert(excl->size >= nexcl->size);
     map_or(excl, nexcl);
     sack->considered_uptodate = 0;
 }
