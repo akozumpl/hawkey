@@ -51,6 +51,16 @@ enum _hy_goal_actions {
     HY_UPGRADE_ALL	= 1 << 6,
 };
 
+enum _hy_goal_actions {
+    HY_ERASE		= 1 << 0,
+    HY_DISTUPGRADE	= 1 << 1,
+    HY_DISTUPGRADE_ALL	= 1 << 2,
+    HY_DOWNGRADE	= 1 << 3,
+    HY_INSTALL		= 1 << 4,
+    HY_UPGRADE		= 1 << 5,
+    HY_UPGRADE_ALL	= 1 << 6,
+};
+
 #define HY_REASON_DEP 1
 #define HY_REASON_USER 2
 
