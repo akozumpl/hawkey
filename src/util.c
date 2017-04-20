@@ -116,9 +116,35 @@ hy_chksum_str(const unsigned char *chksum, int type)
 #define MAX_ARCH_LENGTH 64
 
 int
+hy_detect_rpm_arch(char *arch)
+{
+    FILE *fp = fopen("/etc/rpm/platform", "r");
+    int ret = HY_E_FAILED;
+
+    if (fp) {
+	if (fgets(arch, MAX_ARCH_LENGTH, fp)) {
+            char *pos = index(arch, '-');
+	    if (pos) {
+                *pos = 0;
+		ret = 0;
+	    }
+	}
+	fclose(fp);
+    }
+
+    return ret;
+}
+
+int
 hy_detect_arch(char **arch)
 {
     struct utsname un;
+    char rpm_arch[MAX_ARCH_LENGTH];
+
+    if (!hy_detect_rpm_arch(rpm_arch)) {
+	*arch = solv_strdup(rpm_arch);
+	return 0;
+    }
 
     if (uname(&un))
 	return HY_E_FAILED;
